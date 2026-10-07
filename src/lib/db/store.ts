@@ -359,6 +359,39 @@ class StoreManager {
     return data.suppressionList.some((s) => s.email.toLowerCase() === email.toLowerCase());
   }
 
+  // Users
+  getUsers() {
+    const data = this.load();
+    return data.users;
+  }
+
+  getUserByEmail(email: string) {
+    const data = this.load();
+    return data.users.find((u) => u.email.toLowerCase() === email.toLowerCase());
+  }
+
+  getUserById(id: string) {
+    const data = this.load();
+    return data.users.find((u) => u.id === id);
+  }
+
+  createUser(userData: { email: string; name: string; companyName: string }) {
+    const data = this.load();
+    const existing = data.users.find((u) => u.email.toLowerCase() === userData.email.toLowerCase());
+    if (existing) return existing;
+
+    const newUser = {
+      id: `usr_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      email: userData.email,
+      name: userData.name,
+      companyName: userData.companyName,
+      createdAt: new Date().toISOString(),
+    };
+    data.users.push(newUser);
+    this.save();
+    return newUser;
+  }
+
   // Seller Profile
   getSellerProfile() {
     const data = this.load();

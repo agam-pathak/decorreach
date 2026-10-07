@@ -15,6 +15,8 @@ export const metadata: Metadata = {
   ],
 };
 
+import { AppProviders } from '@/components/providers/AppProviders';
+
 export default function RootLayout({
   children,
 }: {
@@ -23,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark h-full antialiased">
       <body className="min-h-full flex flex-col bg-[#080c14] text-slate-100">
-        {children}
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   );

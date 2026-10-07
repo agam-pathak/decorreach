@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import {
   Compass,
   Users,
@@ -21,12 +22,17 @@ import {
   CheckCircle2,
   Menu,
   X,
+  LogOut,
+  User as UserIcon,
 } from 'lucide-react';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, logout, loginAsDemo } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   const navItems = [
     { name: 'Dashboard', href: '/dashboard', icon: Layers },
@@ -129,20 +135,76 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </nav>
 
         {/* User Card & Mock indicator */}
-        <div className="p-4 border-t border-slate-800/80 space-y-3">
+        <div className="p-4 border-t border-slate-800/80 space-y-3 relative">
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-950/40 border border-emerald-800/40 text-[11px] text-emerald-300">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span className="font-mono">Demo Mode (API Safe)</span>
           </div>
 
-          <div className="flex items-center gap-3 px-2 py-1">
-            <div className="w-8 h-8 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center font-bold text-xs text-white">
-              AP
-            </div>
-            <div className="flex-1 min-w-0">
-              <span className="text-xs font-semibold text-white truncate block">Agam Pathak</span>
-              <span className="text-[10px] text-slate-400 truncate block">Heritage Decor</span>
-            </div>
+          <div className="relative">
+            <button
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              className="w-full flex items-center gap-3 px-2 py-1.5 rounded-xl hover:bg-slate-800/60 transition-colors text-left cursor-pointer"
+            >
+              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-600 to-indigo-600 border border-slate-600 flex items-center justify-center font-bold text-xs text-white shrink-0">
+                {user?.name
+                  ? user.name
+                      .split(' ')
+                      .map((n) => n[0])
+                      .join('')
+                      .substring(0, 2)
+                      .toUpperCase()
+                  : 'AP'}
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="text-xs font-semibold text-white truncate block">
+                  {user?.name || 'Agam Pathak'}
+                </span>
+                <span className="text-[10px] text-slate-400 truncate block">
+                  {user?.companyName || 'Heritage Decor'}
+                </span>
+              </div>
+              <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+            </button>
+
+            {/* Dropdown Menu */}
+            {showUserMenu && (
+              <div className="absolute bottom-full left-0 mb-2 w-full bg-slate-900 border border-slate-800 rounded-xl shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-bottom-2 space-y-1 text-xs">
+                <div className="px-2.5 py-1.5 border-b border-slate-800 text-[11px]">
+                  <p className="font-semibold text-white truncate">{user?.name || 'Agam Pathak'}</p>
+                  <p className="text-slate-400 font-mono truncate">{user?.email || 'agam@decorreach.com'}</p>
+                </div>
+                <Link
+                  href="/dashboard/settings"
+                  onClick={() => setShowUserMenu(false)}
+                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
+                >
+                  <UserIcon className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Profile & Settings</span>
+                </Link>
+                <button
+                  onClick={() => {
+                    loginAsDemo();
+                    setShowUserMenu(false);
+                  }}
+                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-cyan-400 hover:bg-slate-800 transition-colors text-left"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Switch to Demo User</span>
+                </button>
+                <button
+                  onClick={() => {
+                    logout();
+                    setShowUserMenu(false);
+                    router.push('/login');
+                  }}
+                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-rose-400 hover:bg-rose-950/40 transition-colors text-left"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </aside>
@@ -207,12 +269,34 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               )}
             </div>
 
+            {/* User Avatar with Sign In / Out */}
+            {user ? (
+              <button
+                onClick={() => {
+                  logout();
+                  router.push('/login');
+                }}
+                className="text-xs text-slate-400 hover:text-rose-400 px-2 py-1.5 rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 transition-colors flex items-center gap-1.5 cursor-pointer"
+                title="Sign Out"
+              >
+                <LogOut className="w-3 h-3" />
+                <span className="hidden sm:inline">Sign Out</span>
+              </button>
+            ) : (
+              <Link
+                href="/login"
+                className="text-xs text-cyan-400 hover:text-white px-3 py-1.5 rounded-lg border border-cyan-800/60 bg-cyan-950/40 hover:bg-cyan-900/60 transition-colors font-semibold"
+              >
+                Sign In
+              </Link>
+            )}
+
             {/* Home / Exit to Landing */}
             <Link
               href="/"
               className="text-xs text-slate-400 hover:text-white px-2 py-1.5 rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 transition-colors"
             >
-              Exit to Landing
+              Landing
             </Link>
           </div>
         </header>

@@ -62,19 +62,25 @@ export default function LandingPage() {
           </a>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <Link
-            href="/dashboard"
-            className="text-xs font-semibold text-slate-300 hover:text-white px-3.5 py-2 rounded-xl border border-slate-800 bg-slate-900/80 hover:bg-slate-800 transition-colors"
+            href="/login"
+            className="text-xs font-semibold text-slate-300 hover:text-white px-3 py-2 rounded-xl hover:bg-slate-800 transition-colors"
           >
-            Dashboard
+            Sign In
           </Link>
           <Link
-            href="/dashboard/find-buyers"
-            className="py-2.5 px-5 rounded-xl bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-semibold text-xs flex items-center gap-2 shadow-lg shadow-cyan-950/50 transition-all"
+            href="/signup"
+            className="text-xs font-semibold text-slate-300 hover:text-white px-3 py-2 rounded-xl border border-slate-800 bg-slate-900/80 hover:bg-slate-800 transition-colors"
+          >
+            Sign Up
+          </Link>
+          <Link
+            href="/dashboard"
+            className="py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-semibold text-xs flex items-center gap-1.5 shadow-lg shadow-cyan-950/50 transition-all"
           >
             <Compass className="w-3.5 h-3.5" />
-            Find Buyers
+            Launch App
           </Link>
         </div>
       </nav>
